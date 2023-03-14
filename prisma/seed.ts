@@ -1,7 +1,5 @@
-import { Hotel, PrismaClient } from '@prisma/client';
+import { Hotel, PrismaClient, TicketType, Prisma, Places, Activities } from '@prisma/client';
 import dayjs from 'dayjs';
-import { TicketType } from '@prisma/client';
-import { Prisma } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -43,7 +41,7 @@ async function main() {
           },
         },
       },
-      
+
     });
     let hotel2WithRoom = await prisma.hotel.create({
       data: {
@@ -58,7 +56,7 @@ async function main() {
           },
         },
       },
-      
+
     });
     let hotel3WithRoom = await prisma.hotel.create({
       data: {
@@ -69,18 +67,126 @@ async function main() {
             data: [
               { name: '105', capacity: 3 },
               { name: '106', capacity: 2 },
-              { name: '107', capacity: 1},
+              { name: '107', capacity: 1 },
             ],
           },
         },
       },
-      
+
     });
 
     hotelsWithRooms = [hotel1WithRoom, hotel2WithRoom, hotel3WithRoom];
   }
 
-  console.log({ event, ticketType, hotelsWithRooms });
+  let places: Places[] | Prisma.BatchPayload = await prisma.places.findMany();
+
+  if (places.length < 3) {
+    places = await prisma.places.createMany({
+      data: [
+        { name: "Auditório Principal" },
+        { name: "Auditório Lateral" },
+        { name: "Sala de Workshop" },
+      ]
+    })
+  }
+
+  let activities: Activities[] | Prisma.BatchPayload = await prisma.activities.findMany();
+  if (activities.length < 4) {
+    activities = await prisma.activities.createMany({
+      data: [
+        {
+          title: "Minecraft: montando o PC ideal",
+          vacancies: 27,
+          startsAt: new Date(2022, 2, 18, 6),
+          endsAt: new Date(2022, 2, 18, 7),
+          day: new Date(2022, 2, 18, 0),
+          placeId: 1
+        },
+        {
+          title: "LoL: montando o PC ideal",
+          vacancies: 3,
+          startsAt: new Date(2022, 2, 18, 7),
+          endsAt: new Date(2022, 2, 18, 8),
+          day: new Date(2022, 2, 18, 0),
+          placeId: 1
+        },
+        {
+          title: "Palestra x",
+          vacancies: 10,
+          startsAt: new Date(2022, 2, 18, 6),
+          endsAt: new Date(2022, 2, 18, 8),
+          day: new Date(2022, 2, 18, 0),
+          placeId: 2
+        },
+        {
+          title: "Palestra y",
+          vacancies: 8,
+          startsAt: new Date(2022, 2, 18, 6),
+          endsAt: new Date(2022, 2, 18, 10),
+          day: new Date(2022, 2, 18, 0),
+          placeId: 3
+        },
+        {
+          title: "Palestra z",
+          vacancies: 3,
+          startsAt: new Date(2022, 2, 18, 7),
+          endsAt: new Date(2022, 2, 18, 8),
+          day: new Date(2022, 2, 18, 0),
+          placeId: 3
+        },
+        {
+          title: "Minecraft: montando o PC ideal",
+          vacancies: 27,
+          startsAt: new Date(2022, 2, 19, 6),
+          endsAt: new Date(2022, 2, 19, 7),
+          day: new Date(2022, 2, 19, 0),
+          placeId: 1
+        },
+        {
+          title: "LoL: montando o PC ideal",
+          vacancies: 3,
+          startsAt: new Date(2022, 2, 19, 7),
+          endsAt: new Date(2022, 2, 19, 8),
+          day: new Date(2022, 2, 19, 0),
+          placeId: 1
+        },
+        {
+          title: "Palestra x",
+          vacancies: 10,
+          startsAt: new Date(2022, 2, 19, 6),
+          endsAt: new Date(2022, 2, 19, 8),
+          day: new Date(2022, 2, 19, 0),
+          placeId: 2
+        },
+        {
+          title: "Minecraft: montando o PC ideal",
+          vacancies: 27,
+          startsAt: new Date(2022, 2, 20, 6),
+          endsAt: new Date(2022, 2, 20, 7),
+          day: new Date(2022, 2, 20, 0),
+          placeId: 1
+        },
+        {
+          title: "LoL: montando o PC ideal",
+          vacancies: 3,
+          startsAt: new Date(2022, 2, 20, 7),
+          endsAt: new Date(2022, 2, 20, 8),
+          day: new Date(2022, 2, 20, 0),
+          placeId: 1
+        },
+        {
+          title: "Palestra x",
+          vacancies: 10,
+          startsAt: new Date(2022, 2, 20, 6),
+          endsAt: new Date(2022, 2, 20, 8),
+          day: new Date(2022, 2, 20, 0),
+          placeId: 2
+        },
+      ]
+    });
+  }
+
+  console.log({ event, ticketType, hotelsWithRooms, places, activities });
 }
 
 main()
